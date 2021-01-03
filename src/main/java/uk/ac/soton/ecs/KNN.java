@@ -44,6 +44,14 @@ public class KNN
 		return square;
 	}
 
+	private static double euclid(double[] d1, double[] d2) {
+		double distance = 0;
+		for (int i = 0; i < d1.length; i++) {
+			distance += Math.pow(d1[i]-d2[i], 2);
+		}
+		return Math.sqrt(distance);
+	}
+
 	/**
 	 * Gets a vector of the pixels in the image and makes them zero mean
 	 * @param image The image to get the vector from
