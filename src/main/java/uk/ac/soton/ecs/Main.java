@@ -3,23 +3,13 @@ package uk.ac.soton.ecs;
 import org.apache.commons.vfs2.FileSystemException;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.MBFImage;
-import org.openimaj.image.colour.ColourSpace;
-import org.openimaj.image.colour.RGBColour;
-import org.openimaj.image.processing.convolution.FGaussianConvolve;
-import org.openimaj.image.typography.hershey.HersheyFont;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * OpenIMAJ Hello world!
- *
- */
 public class Main
 {
     public static void main( String[] args ) {
