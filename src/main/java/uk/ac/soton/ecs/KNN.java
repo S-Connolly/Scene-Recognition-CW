@@ -28,14 +28,46 @@ public class KNN
 		return new HashMap<>();
 	}
 
-	public static double[] tinyImage(FImage image) {
+	/**
+	 * Crops and resizes the given image into a 16x16 square
+	 * @param image Image to be made tiny
+	 * @return The tiny image
+	 */
+	private static FImage tinyImage(FImage image)
+	{
 		double[] result;
 
 		int size = Math.min(image.getHeight(), image.getRows());
-		FImage square = image.extractCenter(size,size);
-		new ResizeProcessor(16, 16).processImage(square);
+		FImage square = image.extractCenter(size, size);
+		new ResizeProcessor(16f, 16f).processImage(square);
 
-		return square.getDoublePixelVector();
+		return square;
+	}
+
+	/**
+	 * Gets a vector of the pixels in the image and makes them zero mean
+	 * @param image The image to get the vector from
+	 * @return Zero mean vector of the image
+	 */
+	private static double[] zeroMeanVector(FImage image)
+	{
+		double[] vector = image.getDoublePixelVector();
+
+		// Make the vector zero mean
+		double mean = 0d;
+		for(double value : vector)
+		{
+			mean += value;
+		}
+		mean /= vector.length;
+
+		double[] zeroMeanVector = new double[vector.length];
+		for(int i = 0; i < zeroMeanVector.length; i++)
+		{
+			zeroMeanVector[i] = vector[i] - mean;
+		}
+
+		return zeroMeanVector;
 	}
 
 	public static void main(String[] args) throws FileSystemException
@@ -43,6 +75,10 @@ public class KNN
 		GroupedDataset trainingData = Main.loadTrainingData();
 		FImage test = (FImage) trainingData.getRandomInstance();
 
-		System.out.println(Arrays.toString(tinyImage(test)));
+		FImage tiny = tinyImage(test);
+		DisplayUtilities.display(tiny);
+
+		double[] vector = zeroMeanVector(tiny);
+		System.out.println(Arrays.toString(vector));
 	}
 }
