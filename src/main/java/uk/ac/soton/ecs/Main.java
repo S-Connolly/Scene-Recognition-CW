@@ -29,7 +29,7 @@ public class Main
 
         FImage test = (FImage) trainingData.getInstances("bedroom").getRandomInstance();
         DisplayUtilities.display(test);
-        DisplayUtilities.display(tinyImage(test));
+        DisplayUtilities.display(KNN.tinyImage(test));
     }
 
     /**
@@ -70,15 +70,5 @@ public class Main
         }
 
         writer.close();
-    }
-
-    public static FImage tinyImage(FImage image) {
-        double[] result;
-
-        int size = Math.min(image.getHeight(), image.getRows());
-        FImage sixteen = image.extractCenter(size,size);
-        result = sixteen.getDoublePixelVector();
-
-        return sixteen;
     }
 }
