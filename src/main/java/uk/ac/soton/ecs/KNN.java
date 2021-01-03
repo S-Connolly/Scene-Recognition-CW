@@ -1,7 +1,9 @@
 package uk.ac.soton.ecs;
 
+import org.apache.commons.vfs2.FileSystemException;
 import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 
 import java.util.HashMap;
@@ -32,5 +34,13 @@ public class KNN
 		result = sixteen.getDoublePixelVector();
 
 		return sixteen;
+	}
+
+	public static void main(String[] args) throws FileSystemException
+	{
+		GroupedDataset trainingData = Main.loadTrainingData();
+		FImage test = (FImage) trainingData.getInstances("bedroom").getRandomInstance();
+		DisplayUtilities.display(test);
+		DisplayUtilities.display(KNN.tinyImage(test));
 	}
 }

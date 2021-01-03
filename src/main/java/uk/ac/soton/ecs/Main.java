@@ -26,10 +26,6 @@ public class Main
         knn.train(trainingData);
         Map<String, String> knnPredictions = knn.test(testingData);
         makePredictionFile("run1", knnPredictions);
-
-        FImage test = (FImage) trainingData.getInstances("bedroom").getRandomInstance();
-        DisplayUtilities.display(test);
-        DisplayUtilities.display(KNN.tinyImage(test));
     }
 
     /**
@@ -37,7 +33,7 @@ public class Main
      * @return VFSGroupDataset of training images
      * @throws FileSystemException If there is an error loading any of the image files
      */
-    private static VFSGroupDataset<FImage> loadTrainingData() throws FileSystemException
+    public static VFSGroupDataset<FImage> loadTrainingData() throws FileSystemException
     {
         String path = new File("training").getAbsolutePath();
         return new VFSGroupDataset<>(path, ImageUtilities.FIMAGE_READER);
@@ -48,7 +44,7 @@ public class Main
      * @return VFSLListDataset of testing images
      * @throws FileSystemException If there is an error loading any of the image files
      */
-    private static VFSListDataset<FImage> loadTestingData() throws FileSystemException
+    public static VFSListDataset<FImage> loadTestingData() throws FileSystemException
     {
         String path = new File("testing").getAbsolutePath();
         return new VFSListDataset<>(path, ImageUtilities.FIMAGE_READER);
@@ -60,7 +56,7 @@ public class Main
      * @param predictions The map of image file to class predictions
      * @throws IOException If there is an error writing to the file
      */
-    private static void makePredictionFile(String fileName, Map<String, String> predictions) throws IOException
+    public static void makePredictionFile(String fileName, Map<String, String> predictions) throws IOException
     {
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName + ".txt"));
 
