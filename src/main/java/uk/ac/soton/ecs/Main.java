@@ -7,13 +7,11 @@ import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openrdf.query.algebra.Str;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Main
