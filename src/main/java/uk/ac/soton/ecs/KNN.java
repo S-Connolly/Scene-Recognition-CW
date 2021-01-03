@@ -5,7 +5,9 @@ import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,21 +28,21 @@ public class KNN
 		return new HashMap<>();
 	}
 
-	public static FImage tinyImage(FImage image) {
+	public static double[] tinyImage(FImage image) {
 		double[] result;
 
 		int size = Math.min(image.getHeight(), image.getRows());
-		FImage sixteen = image.extractCenter(size,size);
-		result = sixteen.getDoublePixelVector();
+		FImage square = image.extractCenter(size,size);
+		new ResizeProcessor(16, 16).processImage(square);
 
-		return sixteen;
+		return square.getDoublePixelVector();
 	}
 
 	public static void main(String[] args) throws FileSystemException
 	{
 		GroupedDataset trainingData = Main.loadTrainingData();
-		FImage test = (FImage) trainingData.getInstances("bedroom").getRandomInstance();
-		DisplayUtilities.display(test);
-		DisplayUtilities.display(KNN.tinyImage(test));
+		FImage test = (FImage) trainingData.getRandomInstance();
+
+		System.out.println(Arrays.toString(tinyImage(test)));
 	}
 }
