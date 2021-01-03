@@ -1,27 +1,28 @@
 package uk.ac.soton.ecs;
 
 import org.apache.commons.vfs2.FileSystemException;
+import org.openimaj.data.dataset.GroupedDataset;
+import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 public class Main
 {
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws FileSystemException
+    {
+        // Load datasets
+        GroupedDataset trainingData = loadTrainingData();
+        ListDataset testingData = loadTestingData();
 
-        String trainingFolderPath = new File("training").getAbsolutePath();
-        String testingFolderPath = new File("testing").getAbsolutePath();
-
-        List<String> labels = Arrays.asList("bedroom", "Coast", "Forest",
-                "Highway", "industrial", "Insidecity", "kitchen",
-                "livingroom", "Mountain", "Office", "OpenCountry",
-                "store", "Street", "Suburb", "TallBuilding");
-
+        // Run #1 (K Nearest Neighbour)
+        KNN knn = new KNN(10);
+        knn.train(trainingData);
+        Map<String, String> result = knn.test(testingData);
     }
 
     /**
