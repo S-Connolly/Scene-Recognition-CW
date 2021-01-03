@@ -5,8 +5,7 @@ import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
-import org.openimaj.image.FImage;
-import org.openimaj.image.ImageUtilities;
+import org.openimaj.image.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -27,6 +26,10 @@ public class Main
         knn.train(trainingData);
         Map<String, String> knnPredictions = knn.test(testingData);
         makePredictionFile("run1", knnPredictions);
+
+        FImage test = (FImage) trainingData.getInstances("bedroom").getRandomInstance();
+        DisplayUtilities.display(test);
+        DisplayUtilities.display(tinyImage(test));
     }
 
     /**
@@ -67,5 +70,15 @@ public class Main
         }
 
         writer.close();
+    }
+
+    public static FImage tinyImage(FImage image) {
+        double[] result;
+
+        int size = Math.min(image.getHeight(), image.getRows());
+        FImage sixteen = image.extractCenter(size,size);
+        result = sixteen.getDoublePixelVector();
+
+        return sixteen;
     }
 }
