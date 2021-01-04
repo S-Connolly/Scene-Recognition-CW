@@ -13,9 +13,11 @@ import java.util.Map;
 
 public class KNN
 {
+	private final int k;
+
 	public KNN(int k)
 	{
-
+		this.k = k;
 	}
 
 	public void train(VFSGroupDataset<FImage> trainingDataset)
@@ -43,17 +45,17 @@ public class KNN
 	}
 
 	/**
-	 * Crops and resizes the given image into a 16x16 square
+	 * Crops and resizes the given image into a 256 length vector square
 	 * @param image Image to be made tiny
-	 * @return The tiny image
+	 * @return The vector of the tiny image
 	 */
-	private static FImage tinyImage(FImage image)
+	private static double[] tinyImage(FImage image)
 	{
 		int size = Math.min(image.getHeight(), image.getRows());
 		FImage square = image.extractCenter(size, size);
 		new ResizeProcessor(16f, 16f).processImage(square);
 
-		return square;
+		return square.getDoublePixelVector();
 	}
 
 	/**
@@ -100,10 +102,8 @@ public class KNN
 	public static void main(String[] args) throws FileSystemException
 	{
 		VFSGroupDataset<FImage> trainingData = Main.loadTrainingData();
-		FImage image = tinyImage(trainingData.getRandomInstance());
-		//DisplayUtilities.display(tiny);
-
-		double[] vector = unitLengthVector(zeroMeanVector(image.getDoublePixelVector()));
+		double[] vector = tinyImage(trainingData.getRandomInstance());
+		vector = unitLengthVector(zeroMeanVector(vector));
 		System.out.println(Arrays.toString(vector));
 	}
 }
