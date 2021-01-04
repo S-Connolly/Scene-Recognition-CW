@@ -9,13 +9,14 @@ import org.openimaj.image.processing.resize.ResizeProcessor;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class KNN
 {
 	private final int k;
 
-	private VFSGroupDataset<double[]> dataset;
+	private Map<String, List<double[]>> dataset;
 
 	public KNN(int k)
 	{
