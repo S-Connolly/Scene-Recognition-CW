@@ -29,6 +29,20 @@ public class KNN
 	}
 
 	/**
+	 * Computes the euclidean distance between 2 vectors of the same length
+	 * @param d1 Vector A
+	 * @param d2 Vector B
+	 * @return The euclidean distance between A and B
+	 */
+	private static double euclid(double[] d1, double[] d2) {
+		double distance = 0;
+		for (int i = 0; i < d1.length; i++) {
+			distance += Math.pow(d1[i]-d2[i], 2);
+		}
+		return Math.sqrt(distance);
+	}
+
+	/**
 	 * Crops and resizes the given image into a 16x16 square
 	 * @param image Image to be made tiny
 	 * @return The tiny image
@@ -44,24 +58,13 @@ public class KNN
 		return square;
 	}
 
-	private static double euclid(double[] d1, double[] d2) {
-		double distance = 0;
-		for (int i = 0; i < d1.length; i++) {
-			distance += Math.pow(d1[i]-d2[i], 2);
-		}
-		return Math.sqrt(distance);
-	}
-
 	/**
-	 * Gets a vector of the pixels in the image and makes them zero mean
-	 * @param image The image to get the vector from
-	 * @return Zero mean vector of the image
+	 * Creates a zero mean vector from the vector provided
+	 * @param vector The vector to be made zero mean
+	 * @return The zero mean vector
 	 */
-	private static double[] zeroMeanVector(FImage image)
+	private static double[] zeroMeanVector(double[] vector)
 	{
-		double[] vector = image.getDoublePixelVector();
-
-		// Make the vector zero mean
 		double mean = 0d;
 		for(double value : vector)
 		{
@@ -78,15 +81,42 @@ public class KNN
 		return zeroMeanVector;
 	}
 
+	/**
+	 * Creates a unit length vector from the vector provided
+	 * @param vector The vector to be made unit length
+	 * @return The unit length vector
+	 */
+	private static double[] unitLengthVector(double[] vector)
+	{
+		double length = euclid(vector, new double[vector.length]);
+
+		double[] unitLengthVector = new double[vector.length];
+		for(int i = 0; i < unitLengthVector.length; i++)
+		{
+			unitLengthVector[i] = vector[i] / length;
+		}
+
+		return unitLengthVector;
+	}
+
 	public static void main(String[] args) throws FileSystemException
 	{
 		GroupedDataset trainingData = Main.loadTrainingData();
 		FImage test = (FImage) trainingData.getRandomInstance();
 
 		FImage tiny = tinyImage(test);
-		DisplayUtilities.display(tiny);
-
-		double[] vector = zeroMeanVector(tiny);
+		//DisplayUtilities.display(tiny);
+		double[] vector = unitLengthVector(zeroMeanVector(tiny.getDoublePixelVector()));
 		System.out.println(Arrays.toString(vector));
+
+		// Tests:
+		double mean = 0d;
+		for(double value : vector)
+		{
+			mean += value;
+		}
+		mean /= vector.length;
+		System.out.println("Mean: " + mean);
+		System.out.println("Length: " + euclid(vector, new double[vector.length]));
 	}
 }
