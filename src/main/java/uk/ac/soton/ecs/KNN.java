@@ -39,6 +39,26 @@ public class KNN
 
 	public Map<String, String> test(VFSListDataset<FImage> testingDataset)
 	{
+		int correct = 0;
+		int wrong = 0;
+		String name;
+		double distance;
+
+
+		for (FImage testImage: testingDataset) {
+
+			for(Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
+				name = entry.getKey();
+
+				for (double[] d : entry.getValue()) {
+					distance = euclid(d, unitLengthVector(zeroMeanVector(tinyImage(testImage))));
+
+				}
+
+			}
+
+			
+		}
 		return new HashMap<>();
 	}
 
