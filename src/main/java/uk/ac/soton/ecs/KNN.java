@@ -100,21 +100,10 @@ public class KNN
 	public static void main(String[] args) throws FileSystemException
 	{
 		VFSGroupDataset<FImage> trainingData = Main.loadTrainingData();
-		FImage test = trainingData.getRandomInstance();
-
-		FImage tiny = tinyImage(test);
+		FImage image = tinyImage(trainingData.getRandomInstance());
 		//DisplayUtilities.display(tiny);
-		double[] vector = unitLengthVector(zeroMeanVector(tiny.getDoublePixelVector()));
-		System.out.println(Arrays.toString(vector));
 
-		// Tests:
-		double mean = 0d;
-		for(double value : vector)
-		{
-			mean += value;
-		}
-		mean /= vector.length;
-		System.out.println("Mean: " + mean);
-		System.out.println("Length: " + euclid(vector, new double[vector.length]));
+		double[] vector = unitLengthVector(zeroMeanVector(image.getDoublePixelVector()));
+		System.out.println(Arrays.toString(vector));
 	}
 }
