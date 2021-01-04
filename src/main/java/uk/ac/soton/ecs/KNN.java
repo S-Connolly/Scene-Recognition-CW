@@ -3,14 +3,10 @@ package uk.ac.soton.ecs;
 import org.apache.commons.vfs2.FileSystemException;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
-import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class KNN
 {
@@ -23,9 +19,22 @@ public class KNN
 		this.k = k;
 	}
 
+	/**
+	 * Trains calculates all the tiny image vectors for the dataset given
+	 * @param trainingDataset The dataset to train on
+	 */
 	public void train(VFSGroupDataset<FImage> trainingDataset)
 	{
-
+		dataset = new HashMap<>();
+		for(String groupName : trainingDataset.getGroups())
+		{
+			List<double[]> group = new ArrayList<>();
+			for(FImage image : trainingDataset.get(groupName))
+			{
+				group.add(unitLengthVector(zeroMeanVector(tinyImage(image))));
+			}
+			dataset.put(groupName, group);
+		}
 	}
 
 	public Map<String, String> test(VFSListDataset<FImage> testingDataset)
@@ -105,8 +114,7 @@ public class KNN
 	public static void main(String[] args) throws FileSystemException
 	{
 		VFSGroupDataset<FImage> trainingData = Main.loadTrainingData();
-		double[] vector = tinyImage(trainingData.getRandomInstance());
-		vector = unitLengthVector(zeroMeanVector(vector));
-		System.out.println(Arrays.toString(vector));
+		KNN knn = new KNN(10);
+		knn.train(trainingData);
 	}
 }
