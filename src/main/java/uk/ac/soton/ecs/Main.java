@@ -18,8 +18,8 @@ public class Main
     public static void main( String[] args ) throws IOException
     {
         // Load datasets
-        GroupedDataset trainingData = loadTrainingData();
-        ListDataset testingData = loadTestingData();
+        VFSGroupDataset<FImage> trainingData = loadTrainingData();
+        VFSListDataset<FImage> testingData = loadTestingData();
 
         // Run #1 (K Nearest Neighbour)
         KNN knn = new KNN(10);

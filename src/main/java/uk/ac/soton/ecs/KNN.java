@@ -1,8 +1,8 @@
 package uk.ac.soton.ecs;
 
 import org.apache.commons.vfs2.FileSystemException;
-import org.openimaj.data.dataset.GroupedDataset;
-import org.openimaj.data.dataset.ListDataset;
+import org.openimaj.data.dataset.VFSGroupDataset;
+import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.DisplayUtilities;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
@@ -18,12 +18,12 @@ public class KNN
 
 	}
 
-	public void train(GroupedDataset trainingDataset)
+	public void train(VFSGroupDataset<FImage> trainingDataset)
 	{
 
 	}
 
-	public Map<String, String> test(ListDataset testingDataset)
+	public Map<String, String> test(VFSListDataset<FImage> testingDataset)
 	{
 		return new HashMap<>();
 	}
@@ -49,8 +49,6 @@ public class KNN
 	 */
 	private static FImage tinyImage(FImage image)
 	{
-		double[] result;
-
 		int size = Math.min(image.getHeight(), image.getRows());
 		FImage square = image.extractCenter(size, size);
 		new ResizeProcessor(16f, 16f).processImage(square);
@@ -101,8 +99,8 @@ public class KNN
 
 	public static void main(String[] args) throws FileSystemException
 	{
-		GroupedDataset trainingData = Main.loadTrainingData();
-		FImage test = (FImage) trainingData.getRandomInstance();
+		VFSGroupDataset<FImage> trainingData = Main.loadTrainingData();
+		FImage test = trainingData.getRandomInstance();
 
 		FImage tiny = tinyImage(test);
 		//DisplayUtilities.display(tiny);
