@@ -15,6 +15,8 @@ public class KNN
 {
 	private final int k;
 
+	private VFSGroupDataset<double[]> dataset;
+
 	public KNN(int k)
 	{
 		this.k = k;
