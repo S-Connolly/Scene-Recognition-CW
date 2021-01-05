@@ -84,8 +84,8 @@ public class KNN
 		for (int i = 0; i < testingDataset.size(); i++) {
 			testImage = testingDataset.get(i);
 			testImageName = testingDataset.getID(i);
-			System.out.println();
-			System.out.println("Testing " + testImageName + "		" + i);
+			System.out.println("\r\n" + i);
+			System.out.println("Testing " + testImageName);
 			Arrays.fill(kNearest, max);
 			kNearestStrings = new String[k];
 			Arrays.fill(kNearestStrings, "");
