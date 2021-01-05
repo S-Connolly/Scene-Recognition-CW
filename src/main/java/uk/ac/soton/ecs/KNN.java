@@ -13,9 +13,9 @@ public class KNN
 {
 	private final int k;
 
-	private Map<String, List<double[]>> dataset;
-	private Map<String, List<double[]>> trainingDataset = new HashMap<>();
-	private Map<String, List<double[]>> testingDataset = new HashMap<>();
+	//private Map<String, List<double[]>> dataset;
+	private Map<String, List<double[]>> trainingDataset;// = new HashMap<>();
+	private Map<String, List<double[]>> testingDataset;// = new HashMap<>();
 
 	public KNN(int k)
 	{
@@ -24,30 +24,34 @@ public class KNN
 
 	/**
 	 * Trains calculates all the tiny image vectors for the dataset given
-	 * @param trainingDataset The dataset to train on
+	 * @param imageDataset The dataset to train on
 	 */
-	public void train(VFSGroupDataset<FImage> trainingDataset)
+	public void train(VFSGroupDataset<FImage> imageDataset, double split)
 	{
-		dataset = new HashMap<>();
-		for(String groupName : trainingDataset.getGroups())
+		Map<String, List<double[]>> dataset = new HashMap<>();
+		for(String groupName : imageDataset.getGroups())
 		{
 			List<double[]> group = new ArrayList<>();
-			for(FImage image : trainingDataset.get(groupName))
+			for(FImage image : imageDataset.get(groupName))
 			{
 				group.add(unitLengthVector(zeroMeanVector(tinyImage(image))));
 			}
 			dataset.put(groupName, group);
 		}
+
+		trainingDataset = new HashMap<>();
+		testingDataset = new HashMap<>();
+		splitData(dataset, split);
 	}
 
-	public void splitData(double v) {
+	public void splitData(Map<String, List<double[]>> dataset, double split) {
 
 		List<double[]> sublist1;
 		List<double[]> sublist2;
 
 		for (Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
 
-				int size = (int) (entry.getValue().size() * v);
+				int size = (int) (entry.getValue().size() * split);
 				sublist1 = entry.getValue().subList(0, size);
 				sublist2 = entry.getValue().subList(size, entry.getValue().size());
 

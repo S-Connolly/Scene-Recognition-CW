@@ -24,8 +24,7 @@ public class Main
 //        System.out.println("Loaded Testing Data!");
         KNN knn = new KNN(5);
         System.out.println("Training...");
-        knn.train(trainingData);
-        knn.splitData(0.8d);
+        knn.train(trainingData, 0.8d);
         System.out.println("Training Completed!");
         try {
             makePredictionFile("run1", knn.test());
