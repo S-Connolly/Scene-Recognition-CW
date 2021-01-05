@@ -6,6 +6,7 @@ import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 
+import java.io.*;
 import java.util.*;
 
 public class KNN
@@ -39,27 +40,43 @@ public class KNN
 
 	public Map<String, String> test(VFSListDataset<FImage> testingDataset)
 	{
-		int correct = 0;
-		int wrong = 0;
+
+		Map<String, String> predictions = new HashMap<>();
+
 		String name;
+		String pred;
 		double distance;
+		Double[] kNearest;
+		String[] kNearestStrings;
+		FImage testImage;
+		String testImageName;
+		double max = Double.MAX_VALUE;
 
 
-		for (FImage testImage: testingDataset) {
+		for (int i = 0; i < testingDataset.size(); i++) {
+			testImage = testingDataset.get(i);
+			testImageName = testingDataset.getID(i);
+			System.out.println();
+			System.out.println("Testing " + testImageName + "		" + i);
+			kNearest = new Double[]{max,max,max,max,max};
+			kNearestStrings = new String[]{"","","","",""};
 
 			for(Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
 				name = entry.getKey();
 
 				for (double[] d : entry.getValue()) {
-					distance = euclid(d, unitLengthVector(zeroMeanVector(tinyImage(testImage))));
-
+					distance = Math.abs(euclid(d, unitLengthVector(zeroMeanVector(tinyImage(testImage)))));
+					addKNearest(distance, kNearest, kNearestStrings, name);
 				}
-
 			}
 
-			
+			pred = highestFrequency(kNearestStrings);
+			System.out.println("Predicted " + pred);
+			predictions.put(testImageName, pred);
 		}
-		return new HashMap<>();
+
+		System.out.println("Testing Completed!");
+		return predictions;
 	}
 
 	/**
@@ -131,10 +148,86 @@ public class KNN
 		return unitLengthVector;
 	}
 
+	private static void addKNearest(double input, Double[] kNearest, String[] kNearestStrings, String name) {
+		int indexOfLargest = getIndexOfLargest(kNearest);
+
+		if (kNearest[indexOfLargest] > input) {
+			kNearest[indexOfLargest] = input;
+			kNearestStrings[indexOfLargest] = name;
+		}
+	}
+
+	private static int getIndexOfLargest(Double[] arr) {
+		if ( arr== null || arr.length == 0 ) return -1;
+
+		int largest = 0;
+		for ( int i = 1; i < arr.length; i++ ) {
+			if ( arr[i] > arr[largest] ) {
+				largest = i;
+			}
+		}
+		return largest;
+	}
+
+	private static String highestFrequency(String[] kNearestStrings) {
+
+		if (kNearestStrings == null || kNearestStrings.length == 0)
+			return "";
+
+		Arrays.sort(kNearestStrings);
+
+		String previous = kNearestStrings[0];
+		String popular = kNearestStrings[0];
+		int count = 1;
+		int maxCount = 1;
+
+		for (int i = 1; i < kNearestStrings.length; i++) {
+			if (kNearestStrings[i].equals(previous))
+				count++;
+			else {
+				if (count > maxCount) {
+					popular = kNearestStrings[i-1];
+					maxCount = count;
+				}
+				previous = kNearestStrings[i];
+				count = 1;
+			}
+		}
+
+		return count > maxCount ? kNearestStrings[kNearestStrings.length-1] : popular;
+	}
+
 	public static void main(String[] args) throws FileSystemException
 	{
 		VFSGroupDataset<FImage> trainingData = Main.loadTrainingData();
+		System.out.println("Loaded Training Data!");
+		VFSListDataset<FImage> testingDataset = Main.loadTestingData();
+		System.out.println("Loaded Testing Data!");
 		KNN knn = new KNN(10);
+		System.out.println("Training...");
 		knn.train(trainingData);
+		System.out.println("Training Completed!");
+		try {
+			Main.makePredictionFile("run1", knn.test(testingDataset));
+			System.out.println("Prediction File Generated!");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+//		double max = Double.MAX_VALUE;
+//        Double[] kNearest = new Double[]{max,max,max,max,max};
+////        System.out.println(Arrays.toString(kNearest));
+//
+////        Double[] kNearest = new Double[]{4d,3d,4d,52d,74d};
+//        String[] kNearestStrings = new String[]{"ni","ni","ni","","ass"};
+//
+//        addKNearest(1.43234d, kNearest, kNearestStrings, "ass");
+//        System.out.println(Arrays.toString(kNearest));
+//        System.out.println(Arrays.toString(kNearestStrings));
+//        Arrays.sort(kNearestStrings);
+//		System.out.println(Arrays.toString(kNearestStrings));
+//		System.out.println(highestFrequency(kNearestStrings));
+
+//		knn.tes
 	}
 }

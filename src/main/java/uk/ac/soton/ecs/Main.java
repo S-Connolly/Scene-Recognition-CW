@@ -71,9 +71,9 @@ public class Main
     {
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName + ".txt"));
 
-        for(String pair : predictions.keySet())
+        for(Map.Entry<String, String> pair : predictions.entrySet())
         {
-            writer.write(pair + " " + predictions.get(pair) + "\r\n");
+            writer.write(pair.getKey() + " " + pair.getValue() + "\r\n");
         }
 
         writer.close();
