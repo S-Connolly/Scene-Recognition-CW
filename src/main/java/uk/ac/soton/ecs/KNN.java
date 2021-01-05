@@ -14,6 +14,8 @@ public class KNN
 	private final int k;
 
 	private Map<String, List<double[]>> dataset;
+	private Map<String, List<double[]>> trainingDataset = new HashMap<>();
+	private Map<String, List<double[]>> testingDataset = new HashMap<>();
 
 	public KNN(int k)
 	{
@@ -38,45 +40,109 @@ public class KNN
 		}
 	}
 
-	public Map<String, String> test(VFSListDataset<FImage> testingDataset)
+	public void splitData(double v) {
+
+		List<double[]> sublist1;
+		List<double[]> sublist2;
+
+		for (Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
+
+				int size = (int) (entry.getValue().size() * v);
+				sublist1 = entry.getValue().subList(0, size);
+				sublist2 = entry.getValue().subList(size, entry.getValue().size());
+
+				trainingDataset.put(entry.getKey(), sublist1);
+				testingDataset.put(entry.getKey(), sublist2);
+		}
+	}
+
+//	public Map<String, String> test(VFSListDataset<FImage> testingDataset)
+//	{
+//
+//		Map<String, String> predictions = new HashMap<>();
+//
+//		String name;
+//		String pred;
+//		double distance;
+//		Double[] kNearest = new Double[k];
+//		String[] kNearestStrings;
+//		FImage testImage;
+//		String testImageName;
+//		double max = Double.MAX_VALUE;
+//
+//
+//		for (int i = 0; i < testingDataset.size(); i++) {
+//			testImage = testingDataset.get(i);
+//			testImageName = testingDataset.getID(i);
+//			System.out.println();
+//			System.out.println("Testing " + testImageName + "		" + i);
+//			Arrays.fill(kNearest, max);
+//			kNearestStrings = new String[k];
+//			Arrays.fill(kNearestStrings, "");
+//
+//			for(Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
+//				name = entry.getKey();
+//
+//				for (double[] d : entry.getValue()) {
+//					distance = Math.abs(euclid(d, unitLengthVector(zeroMeanVector(tinyImage(testImage)))));
+//					addKNearest(distance, kNearest, kNearestStrings, name);
+//				}
+//			}
+//
+//			pred = highestFrequency(kNearestStrings);
+//			System.out.println("Predicted " + pred);
+//			predictions.put(testImageName, pred);
+//		}
+//
+//		System.out.println("Testing Completed!");
+//		return predictions;
+//	}
+
+	public Map<String, String> test()
 	{
 
 		Map<String, String> predictions = new HashMap<>();
 
+		double correct = 0d;
+		double wrong = 0d;
 		String name;
 		String pred;
 		double distance;
 		Double[] kNearest = new Double[k];
 		String[] kNearestStrings;
-		FImage testImage;
 		String testImageName;
 		double max = Double.MAX_VALUE;
+		int i = 0;
 
+		for(Map.Entry<String, List<double[]>> entry1 : testingDataset.entrySet()) {
+			testImageName = entry1.getKey();
 
-		for (int i = 0; i < testingDataset.size(); i++) {
-			testImage = testingDataset.get(i);
-			testImageName = testingDataset.getID(i);
-			System.out.println();
-			System.out.println("Testing " + testImageName + "		" + i);
-			Arrays.fill(kNearest, max);
-			kNearestStrings = new String[k];
-			Arrays.fill(kNearestStrings, "");
+			for (double[] d1 : entry1.getValue()) {
+				System.out.println();
+				System.out.println("Testing " + testImageName + "		" + i);
+				Arrays.fill(kNearest, max);
+				kNearestStrings = new String[k];
+				Arrays.fill(kNearestStrings, "");
 
-			for(Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
-				name = entry.getKey();
+				for (Map.Entry<String, List<double[]>> entry2 : trainingDataset.entrySet()) {
+					name = entry2.getKey();
 
-				for (double[] d : entry.getValue()) {
-					distance = Math.abs(euclid(d, unitLengthVector(zeroMeanVector(tinyImage(testImage)))));
-					addKNearest(distance, kNearest, kNearestStrings, name);
+					for (double[] d2 : entry2.getValue()) {
+						distance = Math.abs(euclid(d2, d1));
+						addKNearest(distance, kNearest, kNearestStrings, name);
+					}
 				}
+				pred = highestFrequency(kNearestStrings);
+				System.out.println("Predicted " + pred);
+				if (pred.equals(testImageName)) correct++;
+					else wrong++;
+				predictions.put(testImageName, pred);
+				i++;
 			}
-
-			pred = highestFrequency(kNearestStrings);
-			System.out.println("Predicted " + pred);
-			predictions.put(testImageName, pred);
 		}
 
 		System.out.println("Testing Completed!");
+		System.out.println("Accuracy = " + ((correct/(correct+wrong))*100) + "%");
 		return predictions;
 	}
 

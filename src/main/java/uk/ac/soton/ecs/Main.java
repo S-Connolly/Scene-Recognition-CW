@@ -11,7 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
+import java.util.*;
 
 public class Main
 {
@@ -20,14 +20,15 @@ public class Main
     {
         VFSGroupDataset<FImage> trainingData = loadTrainingData();
         System.out.println("Loaded Training Data!");
-        VFSListDataset<FImage> testingDataset = loadTestingData();
-        System.out.println("Loaded Testing Data!");
+//        VFSListDataset<FImage> testingDataset = loadTestingData();
+//        System.out.println("Loaded Testing Data!");
         KNN knn = new KNN(5);
         System.out.println("Training...");
         knn.train(trainingData);
+        knn.splitData(0.8d);
         System.out.println("Training Completed!");
         try {
-            makePredictionFile("run1", knn.test(testingDataset));
+            makePredictionFile("run1", knn.test());
             System.out.println("Prediction File Generated!");
         } catch (IOException e) {
             e.printStackTrace();
