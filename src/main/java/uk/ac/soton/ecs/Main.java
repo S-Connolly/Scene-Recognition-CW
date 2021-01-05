@@ -26,6 +26,17 @@ public class Main
         knn.train(trainingData);
         Map<String, String> knnPredictions = knn.test(testingData);
         makePredictionFile("run1", knnPredictions);
+
+        /*
+        // Run #2 (Linear Classifiers)
+        LinearClassifiers linear = new LinearClassifiers();
+        Map<String, String> linearPredictions = linear.train(trainingData, testingData);
+        makePredictionFile("run2", linearPredictions);
+        for (String key : linearPredictions.keySet()) {
+            System.out.println(key + " " + linearPredictions.get(key));
+        }
+        */
+
     }
 
     /**
@@ -60,9 +71,9 @@ public class Main
     {
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName + ".txt"));
 
-        for(Map.Entry<String, String> pair : predictions.entrySet())
+        for(String pair : predictions.keySet())
         {
-            writer.write(pair.getKey() + " " + pair.toString());
+            writer.write(pair + " " + predictions.get(pair) + "\r\n");
         }
 
         writer.close();
