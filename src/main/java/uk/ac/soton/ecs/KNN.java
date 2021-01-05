@@ -1,21 +1,17 @@
 package uk.ac.soton.ecs;
 
-import org.apache.commons.vfs2.FileSystemException;
 import org.openimaj.data.dataset.VFSGroupDataset;
-import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 
-import java.io.*;
 import java.util.*;
 
 public class KNN
 {
 	private final int k;
 
-	//private Map<String, List<double[]>> dataset;
-	private Map<String, List<double[]>> trainingDataset;// = new HashMap<>();
-	private Map<String, List<double[]>> testingDataset;// = new HashMap<>();
+	private Map<String, List<double[]>> trainingDataset;
+	private Map<String, List<double[]>> testingDataset;
 
 	public KNN(int k)
 	{
@@ -44,19 +40,26 @@ public class KNN
 		splitData(dataset, split);
 	}
 
-	public void splitData(Map<String, List<double[]>> dataset, double split) {
+	private void splitData(Map<String, List<double[]>> dataset, double split)
+	{
+		Random rng = new Random();
 
-		List<double[]> sublist1;
-		List<double[]> sublist2;
+		for(String key : dataset.keySet())
+		{
+			List<double[]> all = dataset.get(key);
+			List<double[]> test = new ArrayList<>();
 
-		for (Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
+			// Select testing data
+			for(int i = 0; i < all.size() * (1 - split); i++)
+			{
+				int current = rng.nextInt(all.size());
+				test.add(all.get(current));
+				all.remove(current);
+			}
+			testingDataset.put(key, test);
 
-				int size = (int) (entry.getValue().size() * split);
-				sublist1 = entry.getValue().subList(0, size);
-				sublist2 = entry.getValue().subList(size, entry.getValue().size());
-
-				trainingDataset.put(entry.getKey(), sublist1);
-				testingDataset.put(entry.getKey(), sublist2);
+			// Add remaining data as training
+			trainingDataset.put(key, all);
 		}
 	}
 
@@ -104,7 +107,6 @@ public class KNN
 
 	public Map<String, String> test()
 	{
-
 		Map<String, String> predictions = new HashMap<>();
 
 		double correct = 0d;
@@ -122,8 +124,7 @@ public class KNN
 			testImageName = entry1.getKey();
 
 			for (double[] d1 : entry1.getValue()) {
-				System.out.println();
-				System.out.println("Testing " + testImageName + "		" + i);
+
 				Arrays.fill(kNearest, max);
 				kNearestStrings = new String[k];
 				Arrays.fill(kNearestStrings, "");
@@ -137,11 +138,14 @@ public class KNN
 					}
 				}
 				pred = highestFrequency(kNearestStrings);
-				System.out.println("Predicted " + pred);
+
 				if (pred.equals(testImageName)) correct++;
 					else wrong++;
 				predictions.put(testImageName, pred);
 				i++;
+
+				//System.out.println("\r\nTesting " + testImageName + "				" + i);
+				//System.out.println("Predicted " + pred);
 			}
 		}
 
