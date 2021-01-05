@@ -1,6 +1,7 @@
 package uk.ac.soton.ecs;
 
 import org.openimaj.data.dataset.VFSGroupDataset;
+import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.FImage;
 import org.openimaj.image.processing.resize.ResizeProcessor;
 
@@ -38,6 +39,8 @@ public class KNN
 		trainingDataset = new HashMap<>();
 		testingDataset = new HashMap<>();
 		splitData(dataset, split);
+
+		printAccuracy();
 	}
 
 	private void splitData(Map<String, List<double[]>> dataset, double split)
@@ -63,51 +66,51 @@ public class KNN
 		}
 	}
 
-//	public Map<String, String> test(VFSListDataset<FImage> testingDataset)
-//	{
-//
-//		Map<String, String> predictions = new HashMap<>();
-//
-//		String name;
-//		String pred;
-//		double distance;
-//		Double[] kNearest = new Double[k];
-//		String[] kNearestStrings;
-//		FImage testImage;
-//		String testImageName;
-//		double max = Double.MAX_VALUE;
-//
-//
-//		for (int i = 0; i < testingDataset.size(); i++) {
-//			testImage = testingDataset.get(i);
-//			testImageName = testingDataset.getID(i);
-//			System.out.println();
-//			System.out.println("Testing " + testImageName + "		" + i);
-//			Arrays.fill(kNearest, max);
-//			kNearestStrings = new String[k];
-//			Arrays.fill(kNearestStrings, "");
-//
-//			for(Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
-//				name = entry.getKey();
-//
-//				for (double[] d : entry.getValue()) {
-//					distance = Math.abs(euclid(d, unitLengthVector(zeroMeanVector(tinyImage(testImage)))));
-//					addKNearest(distance, kNearest, kNearestStrings, name);
-//				}
-//			}
-//
-//			pred = highestFrequency(kNearestStrings);
-//			System.out.println("Predicted " + pred);
-//			predictions.put(testImageName, pred);
-//		}
-//
-//		System.out.println("Testing Completed!");
-//		return predictions;
-//	}
-
-	public Map<String, String> test()
+	public Map<String, String> test(VFSListDataset<FImage> testingDataset)
 	{
+
 		Map<String, String> predictions = new HashMap<>();
+
+		String name;
+		String pred;
+		double distance;
+		Double[] kNearest = new Double[k];
+		String[] kNearestStrings;
+		FImage testImage;
+		String testImageName;
+		double max = Double.MAX_VALUE;
+
+
+		for (int i = 0; i < testingDataset.size(); i++) {
+			testImage = testingDataset.get(i);
+			testImageName = testingDataset.getID(i);
+			System.out.println();
+			System.out.println("Testing " + testImageName + "		" + i);
+			Arrays.fill(kNearest, max);
+			kNearestStrings = new String[k];
+			Arrays.fill(kNearestStrings, "");
+
+			for(Map.Entry<String, List<double[]>> entry : trainingDataset.entrySet()) {
+				name = entry.getKey();
+
+				for (double[] d : entry.getValue()) {
+					distance = Math.abs(euclid(d, unitLengthVector(zeroMeanVector(tinyImage(testImage)))));
+					addKNearest(distance, kNearest, kNearestStrings, name);
+				}
+			}
+
+			pred = highestFrequency(kNearestStrings);
+			System.out.println("Predicted " + pred);
+			predictions.put(testImageName, pred);
+		}
+
+		System.out.println("Accuracy Test Completed!");
+		return predictions;
+	}
+
+	public void printAccuracy()
+	{
+		//Map<String, String> predictions = new HashMap<>();
 
 		double correct = 0d;
 		double wrong = 0d;
@@ -141,7 +144,7 @@ public class KNN
 
 				if (pred.equals(testImageName)) correct++;
 					else wrong++;
-				predictions.put(testImageName, pred);
+				//predictions.put(testImageName, pred);
 				i++;
 
 				//System.out.println("\r\nTesting " + testImageName + "				" + i);
@@ -151,7 +154,7 @@ public class KNN
 
 		System.out.println("Testing Completed!");
 		System.out.println("Accuracy = " + ((correct/(correct+wrong))*100) + "%");
-		return predictions;
+		//return predictions;
 	}
 
 	/**

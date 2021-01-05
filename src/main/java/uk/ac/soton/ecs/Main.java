@@ -1,8 +1,6 @@
 package uk.ac.soton.ecs;
 
 import org.apache.commons.vfs2.FileSystemException;
-import org.openimaj.data.dataset.GroupedDataset;
-import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.data.dataset.VFSListDataset;
 import org.openimaj.image.*;
@@ -16,22 +14,20 @@ import java.util.*;
 public class Main
 {
 
-    public static void main(String[] args) throws FileSystemException
+    public static void main(String[] args) throws IOException
     {
         VFSGroupDataset<FImage> trainingData = loadTrainingData();
         System.out.println("Loaded Training Data!");
-//        VFSListDataset<FImage> testingDataset = loadTestingData();
-//        System.out.println("Loaded Testing Data!");
+        VFSListDataset<FImage> testingDataset = loadTestingData();
+         System.out.println("Loaded Testing Data!");
+
         KNN knn = new KNN(5);
         System.out.println("Training...");
         knn.train(trainingData, 0.8d);
         System.out.println("Training Completed!");
-        try {
-            makePredictionFile("run1", knn.test());
-            System.out.println("Prediction File Generated!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println("Testing...");
+        makePredictionFile("run1", knn.test(testingDataset));
+        System.out.println("Testing Completed! (Prediction File Generated)");
 
         /*
         // Run #2 (Linear Classifiers)
