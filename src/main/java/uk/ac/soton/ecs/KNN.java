@@ -46,7 +46,7 @@ public class KNN
 		String name;
 		String pred;
 		double distance;
-		Double[] kNearest;
+		Double[] kNearest = new Double[k];
 		String[] kNearestStrings;
 		FImage testImage;
 		String testImageName;
@@ -58,8 +58,9 @@ public class KNN
 			testImageName = testingDataset.getID(i);
 			System.out.println();
 			System.out.println("Testing " + testImageName + "		" + i);
-			kNearest = new Double[]{max,max,max,max,max};
-			kNearestStrings = new String[]{"","","","",""};
+			Arrays.fill(kNearest, max);
+			kNearestStrings = new String[k];
+			Arrays.fill(kNearestStrings, "");
 
 			for(Map.Entry<String, List<double[]>> entry : dataset.entrySet()) {
 				name = entry.getKey();
@@ -195,39 +196,5 @@ public class KNN
 		}
 
 		return count > maxCount ? kNearestStrings[kNearestStrings.length-1] : popular;
-	}
-
-	public static void main(String[] args) throws FileSystemException
-	{
-		VFSGroupDataset<FImage> trainingData = Main.loadTrainingData();
-		System.out.println("Loaded Training Data!");
-		VFSListDataset<FImage> testingDataset = Main.loadTestingData();
-		System.out.println("Loaded Testing Data!");
-		KNN knn = new KNN(10);
-		System.out.println("Training...");
-		knn.train(trainingData);
-		System.out.println("Training Completed!");
-		try {
-			Main.makePredictionFile("run1", knn.test(testingDataset));
-			System.out.println("Prediction File Generated!");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-//		double max = Double.MAX_VALUE;
-//        Double[] kNearest = new Double[]{max,max,max,max,max};
-////        System.out.println(Arrays.toString(kNearest));
-//
-////        Double[] kNearest = new Double[]{4d,3d,4d,52d,74d};
-//        String[] kNearestStrings = new String[]{"ni","ni","ni","","ass"};
-//
-//        addKNearest(1.43234d, kNearest, kNearestStrings, "ass");
-//        System.out.println(Arrays.toString(kNearest));
-//        System.out.println(Arrays.toString(kNearestStrings));
-//        Arrays.sort(kNearestStrings);
-//		System.out.println(Arrays.toString(kNearestStrings));
-//		System.out.println(highestFrequency(kNearestStrings));
-
-//		knn.tes
 	}
 }

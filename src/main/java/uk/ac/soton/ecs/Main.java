@@ -15,17 +15,23 @@ import java.util.Map;
 
 public class Main
 {
-    public static void main( String[] args ) throws IOException
-    {
-        // Load datasets
-        VFSGroupDataset<FImage> trainingData = loadTrainingData();
-        VFSListDataset<FImage> testingData = loadTestingData();
 
-        // Run #1 (K Nearest Neighbour)
-        KNN knn = new KNN(10);
+    public static void main(String[] args) throws FileSystemException
+    {
+        VFSGroupDataset<FImage> trainingData = loadTrainingData();
+        System.out.println("Loaded Training Data!");
+        VFSListDataset<FImage> testingDataset = loadTestingData();
+        System.out.println("Loaded Testing Data!");
+        KNN knn = new KNN(5);
+        System.out.println("Training...");
         knn.train(trainingData);
-        Map<String, String> knnPredictions = knn.test(testingData);
-        makePredictionFile("run1", knnPredictions);
+        System.out.println("Training Completed!");
+        try {
+            makePredictionFile("run1", knn.test(testingDataset));
+            System.out.println("Prediction File Generated!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         /*
         // Run #2 (Linear Classifiers)
@@ -36,7 +42,6 @@ public class Main
             System.out.println(key + " " + linearPredictions.get(key));
         }
         */
-
     }
 
     /**
