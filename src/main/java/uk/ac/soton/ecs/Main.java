@@ -18,18 +18,18 @@ public class Main
     {
         VFSGroupDataset<FImage> trainingData = loadTrainingData();
         System.out.println("Loaded Training Data!");
-        VFSListDataset<FImage> testingDataset = loadTestingData();
-         System.out.println("Loaded Testing Data!");
+        VFSListDataset<FImage> testingData = loadTestingData();
+        System.out.println("Loaded Testing Data!");
 
-        KNN knn = new KNN(5);
-        System.out.println("Training...");
-        knn.train(trainingData, 0.8d);
-        System.out.println("Training Completed!");
-        System.out.println("Testing...");
-        makePredictionFile("run1", knn.test(testingDataset));
-        System.out.println("Testing Completed! (Prediction File Generated)");
+//        KNN knn = new KNN(5);
+//        System.out.println("Training...");
+//        knn.train(trainingData, 0.8d);
+//        System.out.println("Training Completed!");
+//        System.out.println("Testing...");
+//        makePredictionFile("run1", knn.test(testingData));
+//        System.out.println("Testing Completed! (Prediction File Generated)");
 
-        /*
+
         // Run #2 (Linear Classifiers)
         LinearClassifiers linear = new LinearClassifiers();
         Map<String, String> linearPredictions = linear.train(trainingData, testingData);
@@ -37,7 +37,6 @@ public class Main
         for (String key : linearPredictions.keySet()) {
             System.out.println(key + " " + linearPredictions.get(key));
         }
-        */
     }
 
     /**

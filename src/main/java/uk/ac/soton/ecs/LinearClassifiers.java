@@ -4,6 +4,7 @@ import de.bwaldvogel.liblinear.SolverType;
 import org.openimaj.data.DataSource;
 import org.openimaj.data.dataset.*;
 import org.openimaj.experiment.dataset.sampling.GroupedUniformRandomisedSampler;
+import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.feature.FeatureExtractor;
 import org.openimaj.feature.FeatureVector;
@@ -37,8 +38,15 @@ public class LinearClassifiers {
         this.clusterSize = clusterSize;
     }
 
-    protected Map<String, String> train(VFSGroupDataset<FImage> training, VFSListDataset<FImage> testing) {
+    protected Map<String, String> train(GroupedDataset training, VFSListDataset<FImage> testing) {
+        System.out.println("STARTING TRAINING...");
         HardAssigner<double[], double[], IntDoublePair> assigner = trainQuantiser(GroupedUniformRandomisedSampler.sample(training, 100));
+
+        //Split training data
+        int trainAmount = (int) Math.floor(training.size() * 0.8f);
+        GroupedRandomSplitter splitter = new GroupedRandomSplitter(training, trainAmount, 0, training.size() - trainAmount);
+        GroupedDataset trainingAcc = splitter.getTestDataset();
+        training = splitter.getTrainingDataset();
 
         //feature extractor
         DenseFeatureExtractor extractor = new DenseFeatureExtractor(assigner);
@@ -47,15 +55,45 @@ public class LinearClassifiers {
                 extractor, LiblinearAnnotator.Mode.MULTICLASS, SolverType.L2R_L2LOSS_SVC, 1.0, 0.00001);
 
         ann.train(training);
+        System.out.println("TRAINING COMPLETE!");
 
+        System.out.println("TESTING ACCURACY...");
+        printAccuracy(ann, trainingAcc);
+        System.out.println("ACCURACY TEST COMPLETE!");
+
+
+        System.out.println("TESTING...");
         Map<String, String> classifications = new HashMap<>();
 
         for (int i = 0; i < testing.size(); i++) {
             String prediction = (String) ann.classify(testing.getInstance(i)).getPredictedClasses().toArray()[0];
             classifications.put(testing.getID(i), prediction);
         }
-
+        System.out.println("TESTING COMPLETE!");
         return classifications;
+    }
+
+    public void printAccuracy(LiblinearAnnotator<FImage, String> ann, GroupedDataset<String, ListDataset<FImage>, FImage> dataset)
+    {
+        float correct = 0;
+        float total = 0;
+
+        for(String key : dataset.keySet())
+        {
+            for(FImage image : dataset.get(key))
+            {
+                total += 1;
+                String prediction = (String) ann.classify(image).getPredictedClasses().toArray()[0];
+                if(prediction.equals(key))
+                {
+                    correct += 1;
+                }
+            }
+        }
+
+        //System.out.println("CORRECT: " + correct);
+        //System.out.println("TESTED: " + total);
+        System.out.println("Accuracy = " + ((correct / total) * 100) + "%");
     }
 
     //cropping patches depending on the parameters of the LinearClassifier
